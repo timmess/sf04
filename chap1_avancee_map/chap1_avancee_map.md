@@ -38,11 +38,6 @@ Lancez le serveur sans le protocole HTTPS
 symfony serve --no-tls
 ```
 
-Si vous n'avez pas de CLI 
-
-```bash
-php bin/console server:start
-```
 
 Installez la gestion des routes 
 
