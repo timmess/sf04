@@ -29,6 +29,8 @@ Puis lancez la commande suivante pour créer effectivement la base de données :
 php bin/console doctrine:database:create
 ```
 
+## 03 Exercice création des tables
+
 Voici le diagramme UML des tables qui explicite les relations que nous devons implémenter entre les tables :
 
 ![database schema](images/simplebar_01.png)
@@ -37,7 +39,7 @@ Une bière aura 0 à plusieurs catégorie(s) et une catégorie comportera 0 à p
 
 Doctrine va nous permettre d'implémenter ces relations en base de données.
 
-## Créez l'entité Country
+### Créez l'entité Country
 
 Vous allez commencer par créer la table country à, notez qu'avec Doctrine la convention c'est de créer d'abord l'entité, la classe PHP, elle sera au singulier (convention). Par la suite nous déclencherons une deuxième méthode qui permettra de créer la table en base de données. Tapez la ligne de commande suivante, puis nommez votre entity Country :
 
@@ -47,7 +49,7 @@ php bin/console make:entity
 
 Aidez-vous de la documentation Symfony pour créer cette table, il vous suffit de répondre aux questions dans la console. Lisez bien les remarques dans la console elle-même lors de la création de l'entité.
 
-## Création de l'entité Beer
+### Création de l'entité Beer
 
 Tapez la même commande que précédement, créez uniquement les champs : name, description et published_at en respectant les types du diagramme UML ci-dessus. Si vous vous trompez supprimer les fichiers se trouvant dans les dossiers Entity et Repository correspondant à votre entity et recommencez.
 
@@ -68,13 +70,13 @@ Dans l'entité Beer nous allons relier Beer à Country de la manière suivante, 
 private $country;
 ```
 
-## Création de l'entité Category
+### Création de l'entité Category
 
 Créez simplement la table Category avec un name uniquement, puis indiquez à Doctrine que vous souhaitez mettre en relation Beer et Category dans une relation ManyToMany, une bière peut se trouver dans une ou plusieurs catégories et réciproquement une catégorie peut contenir plusieurs bières.
 
 *Remarques : si vous vous trompez vous pouvez modifiez l'entité en donnant le nom de l'entité à modifier.*
 
-## Migration
+### Migration
 
 Pour créer le fichier de migration tapez la ligne de commande suivante, il permet de générer un fichier PHP dans lequel toutes les commandes SQL sont écrites afin de créer effectivement les tables en base de données, bien sûr il faudra exécuter une autre commande pour passer à la création des tables en base de données :
 
@@ -88,7 +90,7 @@ Par la suite vous taperez la ligne suivante afin de créer les tables en base de
 php bin/console doctrine:migrations:migrate
 ```
 
-## Insertion de données dans la table Beer
+## 04 Exercice Insertion de données dans la table Beer
 
 Nous allons maintenant créer quelques bières et les afficher en page d'accueil, nous allons pour se faire créer une méthode spécifique dans notre contrôleur BarController.
 
