@@ -88,13 +88,15 @@ public function showBeer(Beer $beer)
 
 ### Installez Encore pour la gestion des assets
 
+Encore c'est la couche webpack de SF avec du Node.js et donc JS permettant de gérer les assets (images, CSS, SVG, CSS, JS ...), avec Encore vous allez pouvoir faire également du React ou Vue.js ou Angular. En générale on fait des parties de l'application en React et le reste en Full SF en PHP.
+
 ```bash
 composer require symfony/webpack-encore-bundle
 
 npm install
 ```
 
-Considérez maintenant le fichier package.json
+Considérez maintenant le fichier **package.json**, ce sont les commandes configurer par Encore pour builder les assets pour votre application.
 
 ```json
 "scripts": {
@@ -105,10 +107,45 @@ Considérez maintenant le fichier package.json
 }
 ```
 
-Installez la gestion des SCSS ajoutez la dépendance suivante
+Dans la console on lancera la commande suivante pour exécuter les commandes ci-dessus.
+
+```bash
+npm run watch 
+# encore dev --watch sera alors exécutée
+```
+
+Installez la gestion des SCSS ajoutez la dépendance suivante ( SASS vous permettent de faire des scripts pour créer les CSS )
 
 ```bash
 npm install sass-loader@^10.0.0 sass --save-dev
+```
+
+Nous allons installer le bootstrap CSS.
+
+```bash
+npm install bootstrap --save-dev
+```
+
+Pour faire le lien entre les fichiers assets et Twig décommenter dans base.html.twig les lignes suivantes :
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}   {# DECOMMENTER # }
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}  {# DECOMMENTER # }
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+    </body>
+</html>
 ```
 
 Modifiez le fichier webpack.config.js, décommentez la ligne suivante 
@@ -152,15 +189,10 @@ Puis créez le contrôleur suivant
 symfony console make:controller BeerController
 ```
 
-## Bootstrap CSS
 
-Installez le bootstrap et les dépendances.
+## 02 Exercice Installez les imges dans le dossier assets
 
-```bash
-npm install bootstrap --save-dev
-```
-
-## Installez les imges dans le dossier assets
+Récupérez une image de bière libre de droit, placez la dans le dossier assets de SF
 
 ```text
 assets/
@@ -182,6 +214,8 @@ N'oubliez pas de décommenter la ligne suivante pour mettre à jour dans le fich
 ```js
 .cleanupOutputBeforeBuild()
 ```
+
+Remarque sur la configuration
 
 Lorsque vous installez Encore Symfony crée un fichier de configuration propre aux assets, les images sont "builder" dans le dossier public.
 
