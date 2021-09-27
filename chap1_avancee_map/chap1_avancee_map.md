@@ -51,7 +51,13 @@ Installez le moteur de templating
 composer require twig
 ```
 
-Installez maintenant le debug de Symfony
+Pour désinstaller **proprement** une dépendance dans Symfony utilisez la commande suivante
+
+```bash
+composer remove twig
+```
+
+Installez maintenant le debug de Symfony, en mode development cette dépendance ne sera pas déployer en production.
 
 ```bash
 composer require debug --dev
@@ -61,6 +67,23 @@ Installez la possibilité d'injecter des entités en paramètre des méthodes de
 
 ```bash
 composer require sensio/framework-extra-bundle
+```
+
+Vous pourrez injecter directement le type de l'entité en paramètre des méthodes, SF hydratera l'entité avec le bon identifiant pour récupérer la ressource.
+
+```php
+// Une méthode dans un contrôleur 
+/**
+ * @Route("/beer/{id}", name="show_beer")
+ */
+public function showBeer(Beer $beer)
+{
+    // Une instance de l'entité Beer avec l'id récupéré dans l'URL
+    dump($beer);
+    
+    dump($beer->getId()); // affiche l'identifiant passé en paramètre
+}
+
 ```
 
 ### Installez Encore pour la gestion des assets
