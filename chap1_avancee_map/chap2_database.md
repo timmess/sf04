@@ -188,9 +188,7 @@ Pour plus d'information sur ces commandes reportez-vous à la documentation offi
 
 ## 05 Exercice Catégories Fixture
 
-Modifiez l'entité Category et ajoutez un champ "term", par défaut ce champ est "normal".
-
-Créez les catégories suivantes, chaque bière aura une catégorie "normal" et au moins une catégorie spéciale :
+1. Modifiez l'entité Category et ajoutez un champ "term", par défaut ce champ est "normal". Créez les catégories suivantes, chaque bière aura une catégorie "normal" et au moins une catégorie spéciale :
 
 ```php
 // catégories normals
@@ -201,27 +199,12 @@ $categoriesSpecials = ['houblon', 'rose', 'menthe', 'grenadine', 'réglisse', 'm
 
 ```
 
-Créez ces catégories et associées ces catégories aux bières déjà créés à l'aide de votre AppFixtures. Mettez à jour les données.
+2. Créez ces catégories et associées ces catégories aux bières déjà créés à l'aide de votre AppFixtures. Mettez à jour les données.
 
 Vous allez créer maintenant dans le repository CategoryRepository une méthode findByTerm, elle permettra de récupérer les catégories selon leur terme propre.
 
-Affichez pour l'instant dans un dump dans le constructeur du Controller BarController pour vérifier que vous récupérez bien ces catégories.
 
-```php
-class BarController extends AbstractController
-{
-
-    public function __construct()
-    {
-        $repository = $this->getDoctrine()->getRepository(Beer::class);
-        dump($repository->findByTerm('special'));
-    }
-
-    //...
-}
-```
-
-Pour finir ajoutez un champ price
+3. Ajoutez un champ price à l'entité Beer
 
 Reprenez l'entité Beer et ajouter un price à celle-ci. Pour se faire il suffit de relancer la commande suivante, notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule :
 
