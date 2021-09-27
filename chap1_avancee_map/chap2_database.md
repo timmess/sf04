@@ -92,37 +92,9 @@ php bin/console doctrine:migrations:migrate
 
 ## 04 Exercice Insertion de données dans la table Beer
 
-Nous allons maintenant créer quelques bières et les afficher en page d'accueil, nous allons pour se faire créer une méthode spécifique dans notre contrôleur BarController.
+Fixtures Doctrine, insertion de données dans les tables pour hydrater les modèles.
 
-Créez maintenant dans le contrôleur BarController la méthode suivante **createBeer**, nous l'utiliserons pour insérer des données dans la table Beer :
-
-```php
-
-/**
-     * @Route("/newbeer", name="create_beer")
-     */
-    public function createBeer(){
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $beer = new Beer();
-        $beer->setname('Super Beer');
-        $beer->setPublishedAt(new \DateTime());
-        $beer->setDescription('Ergonomic and stylish!');
-
-        // tell Doctrine you want to (eventually) save the Product (no queries yet)
-        $entityManager->persist($beer);
-
-        // actually executes the queries (i.e. the INSERT query)
-        $entityManager->flush();
-
-        return new Response('Saved new beer with id '.$beer->getId());
-    }
-
-```
-
-## Fixtures Doctrine, insertion de données dans les tables
-
-Nous allons maintenant utiliser des fixtures pour insérer des données d'exemple dans la ressource Beer en base de données, en ligne de commande tapez :
+Nous allons utiliser des fixtures pour insérer des données d'exemple dans la ressource Beer en base de données, en ligne de commande tapez :
 
 ```bash
 composer require --dev doctrine/doctrine-fixtures-bundle
@@ -165,8 +137,6 @@ class AppFixtures extends Fixture
 
 ```
 
-## Exercice Faker et AppFixtures
-
 Insérez des données à l'aide de AppFixture et de Faker, puis tapez la ligne de commande suivante :
 
 ```bash
@@ -176,7 +146,7 @@ php bin/console doctrine:fixtures:load
 Pour plus d'information sur ces commandes reportez-vous à la documentation officiel :
 [Fixture](https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html)
 
-## Exercice Affichez les bières en page d'accueil
+Pour finir afficher les bières en page d'accueil.
 
 Vous allez maintenant afficher les bières en page d'accueil. Pour cela vous allez utiliser la classe Repository de l'entité Beer.
 
@@ -204,7 +174,7 @@ Affichez maintenant les bières en page d'accueil. Notez que la syntaxe dans le 
 
 ```
 
-## Exercice Ajoutez un champ price
+## 05 Exercice Ajoutez un champ price
 
 Reprenez l'entité Beer et ajouter un price à celle-ci. Pour se faire il suffit de relancer la commande suivante, notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule :
 
