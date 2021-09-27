@@ -249,6 +249,8 @@ Pour le lien vers les images on fera comme suit :
 ## Mettez en place la base de données et les entités
 
 ```bash
+# ORM Doctrine
 composer require symfony/orm-pack
+# Makers de Doctrine
 composer require --dev symfony/maker-bundle
 ```
