@@ -167,6 +167,7 @@ npm install react react-dom prop-types --save
 Vous avez d'un côté le serveur PHP qui est exécuté par la couche Symfony, nous allons maintenant lancer le serveur Node.js en s'appuyant sur la configuration webpack.config.js
 
 ```bash
+# Nous verrons cette ligne de commande plus tard
 npm run dev-server -- --port 9000
 ```
 
@@ -177,8 +178,10 @@ Vous allez maintenant installer les maker Symfony pour créer par exemple plus f
 ```bash
 symfony composer req maker --dev
 
-# Liste les makers
-symfony console list make
+# list les commandes 
+symfony console list 
+# Permet de passer une Regex sur l'ensemble des commandes listées en console
+symfony console list | grep maker
 ```
 
 Notez que c'est une dépendance Dev.
