@@ -90,7 +90,7 @@ Par la suite vous taperez la ligne suivante afin de créer les tables en base de
 php bin/console doctrine:migrations:migrate
 ```
 
-## 04 Exercice Insertion de données dans la table Beer
+## 04 Exercice Insertion de données dans la table Beer & Country
 
 Fixtures Doctrine, insertion de données dans les tables pour hydrater les modèles.
 
@@ -111,7 +111,9 @@ Vous trouverez la documentation officiel à l'adresse suivante :
 composer require --dev fakerphp/faker
 ```
 
-Dans le fichier AppFixtures.php précisez le namespace de la dépendance Faker comme suit (autoloader), précisez également le nom des entités avec lesquelles vous souhaitez travailler :
+Vous pouvez travailler dans le fichier AppFixtures cependant la création d'une fixture spécifique par entité est plus portable, plus clair aussi ...
+
+Créez par la suite une fixture par entité.
 
 ```php
 
@@ -140,89 +142,51 @@ class AppFixtures extends Fixture
 Insérez des données à l'aide de AppFixture et de Faker, puis tapez la ligne de commande suivante :
 
 ```bash
+# Création d'une fixture 
+php bin/console make:fixture BeerFixtures
+
+# Load fixture en bas de données
 php bin/console doctrine:fixtures:load
 ```
 
-Pour plus d'information sur ces commandes reportez-vous à la documentation officiel :
-[Fixture](https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html)
-
-Pour finir afficher les bières en page d'accueil.
-
-Vous allez maintenant afficher les bières en page d'accueil. Pour cela vous allez utiliser la classe Repository de l'entité Beer.
-
-Dans le contrôleur BarController Symfony met à notre disposition, sous forme d'un service, Doctrine. Nous pouvons donc utiliser le repository Beer et sa méthode findAll comme suit pour récupérer l'ensemble des ressources de cette table :
+Attention pour faire les fixtures dans un ordre précis vous devez implémenter une interface dans vos classes (Fixtures) :
 
 ```php
+<?php
 
-$repository = $this->getDoctrine()->getRepository(Beer::class);
-$beers = $repository->findAll();
+namespace App\DataFixtures;
 
+use App\Entity\Beer;
+use App\Entity\Country;
+use Faker;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
+
+class BeerFixtures extends Fixture implements OrderedFixtureInterface
+{
+    public function load(ObjectManager $manager)
+    {
+    }
+    
+   public function getOrder(){ 
+    return 2; // sera faite après une autre fixture 
+   }
+}
 ```
 
-Affichez maintenant les bières en page d'accueil. Notez que la syntaxe dans le template Twig pour afficher les données est différentes du PHP habituel :
-
-```html
-
-{% for beer in beers %}
-    {{ beer.name }}
-    {# attention la date est retournée dans un objet
-    il faut donc appliquer un pipe | et une fonction
-    dessus pour afficher la date correctement :
-     #}
-    {{ beer.publishedAt | date('d/m/Y')}}
-{% endfor %}
-
-```
-
-## 05 Exercice Ajoutez un champ price
-
-Reprenez l'entité Beer et ajouter un price à celle-ci. Pour se faire il suffit de relancer la commande suivante, notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule :
-
-```bash
-
-# Ajoutez le nouveau champ ...
-php bin/console make:entity
-
-# Créez le fichier de migration en tenant compte de
-# l'état de la base de données et des entités
-php bin/console doctrine:migrations:diff
-
-```
-
-Mettez à jour les fixtures en ajoutant à l'aide de faker des prix à vos bières.
-
-![database schema](images/simplebar_02.png)
-
-## Création des countries
-
-Dans AppFixtures créez des pays, voir la liste ci-dessous, puis en utilisant setCountry de Beer essayez d'associer un pays à une bière :
+Dans CountryFixture créez des pays, voir la liste ci-dessous, puis en utilisant setCountry de Beer essayez d'associer un pays à une bière :
 
 ```php
 $countries = ['belgium', 'french', 'English', 'germany'];
 ```
 
-## Routes beer
+- Documenation du Faker
 
-Ajoutez un lien dans le code Twig de la page d'accueil pour accéder à la page affichant les bières d'un pays. Vous afficherez ce lien pour chaque bière (si la bière est associé à un pays), voyez ce lien comme un tag ou mot clé de la bière.
+Pour plus d'information sur ces commandes reportez-vous à la documentation officiel :
+[Fixture](https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html)
 
-Vous devez créer une action (méthode), par exemple show_beer, dans le contrôleur BarController. Attention cette méthode possède un paramètre qui est techniquement l'identifiant unique correspondant au pays.
-
-Pour le lien vous utiliserez le helper de Symfony "path" de la manière suivante :
-
-```html
-{#
-Twig
-Votre url aura la forme suivante : http://localhost:8000/country/1
-notez que country_beer est le nom de votre route (voir les annotations)
-#}
-{% if beer.country %}
-    <a href="{{ path('country_beer', { 'id' : beer.country.id }) }}">
-        {{ beer.country.name }}
-    </a>
-{% endif %}
-```
-
-## Catégories
+## 05 Exercice Catégories Fixture
 
 Modifiez l'entité Category et ajoutez un champ "term", par défaut ce champ est "normal".
 
@@ -255,6 +219,77 @@ class BarController extends AbstractController
 
     //...
 }
+```
+
+Pour finir ajoutez un champ price
+
+Reprenez l'entité Beer et ajouter un price à celle-ci. Pour se faire il suffit de relancer la commande suivante, notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule :
+
+```bash
+
+# Ajoutez le nouveau champ ...
+php bin/console make:entity
+
+# Créez le fichier de migration en tenant compte de
+# l'état de la base de données et des entités
+php bin/console doctrine:migrations:diff
+
+```
+
+Mettez à jour les fixtures en ajoutant à l'aide de faker des prix à vos bières.
+
+## 06 Exercice affichez les bières en page d'accueil
+
+Vous allez maintenant afficher les bières en page d'accueil. Pour cela vous allez utiliser la classe Repository de l'entité Beer.
+
+Dans le contrôleur BarController Symfony met à notre disposition, sous forme d'un service, Doctrine. Nous pouvons donc utiliser le repository Beer et sa méthode findAll comme suit pour récupérer l'ensemble des ressources de cette table :
+
+```php
+
+$repository = $this->getDoctrine()->getRepository(Beer::class);
+$beers = $repository->findAll();
+
+```
+
+Affichez maintenant les bières en page d'accueil. Notez que la syntaxe dans le template Twig pour afficher les données est différentes du PHP habituel :
+
+```html
+
+{% for beer in beers %}
+    {{ beer.name }}
+    {# attention la date est retournée dans un objet
+    il faut donc appliquer un pipe | et une fonction
+    dessus pour afficher la date correctement :
+     #}
+    {{ beer.publishedAt | date('d/m/Y')}}
+{% endfor %}
+
+```
+
+![database schema](images/simplebar_02.png)
+
+## Création des countries
+
+
+## Routes beer
+
+Ajoutez un lien dans le code Twig de la page d'accueil pour accéder à la page affichant les bières d'un pays. Vous afficherez ce lien pour chaque bière (si la bière est associé à un pays), voyez ce lien comme un tag ou mot clé de la bière.
+
+Vous devez créer une action (méthode), par exemple show_beer, dans le contrôleur BarController. Attention cette méthode possède un paramètre qui est techniquement l'identifiant unique correspondant au pays.
+
+Pour le lien vous utiliserez le helper de Symfony "path" de la manière suivante :
+
+```html
+{#
+Twig
+Votre url aura la forme suivante : http://localhost:8000/country/1
+notez que country_beer est le nom de votre route (voir les annotations)
+#}
+{% if beer.country %}
+    <a href="{{ path('country_beer', { 'id' : beer.country.id }) }}">
+        {{ beer.country.name }}
+    </a>
+{% endif %}
 ```
 
 ## Main menu
