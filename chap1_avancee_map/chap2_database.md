@@ -267,22 +267,7 @@ Affichez maintenant les bières en page d'accueil. Notez que la syntaxe dans le 
 
 Respectez le wireframe suivant 
 
-```txt
----------------------------------------
-    PLACE DU MENU
----------------------------------------
-SIDEBAR |  title : beer        |
-        |  date create : ...   |
-        |  price : 9           |
-        |  description : ...   |
-        |  [photo beer]
-        |  country: germany
-        |  categories : ...
-        |
----------------------------------------
-   PLACE DU FOOTER
----------------------------------------
-```
+![beer page](images/page_beers.png)
 
 Résumé du schéma des données
 
