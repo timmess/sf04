@@ -29,6 +29,8 @@ Puis lancez la commande suivante pour créer effectivement la base de données :
 php bin/console doctrine:database:create
 ```
 
+## 03 Exercice création des tables
+
 Voici le diagramme UML des tables qui explicite les relations que nous devons implémenter entre les tables :
 
 ![database schema](images/simplebar_01.png)
@@ -37,7 +39,7 @@ Une bière aura 0 à plusieurs catégorie(s) et une catégorie comportera 0 à p
 
 Doctrine va nous permettre d'implémenter ces relations en base de données.
 
-## Créez l'entité Country
+### Créez l'entité Country
 
 Vous allez commencer par créer la table country à, notez qu'avec Doctrine la convention c'est de créer d'abord l'entité, la classe PHP, elle sera au singulier (convention). Par la suite nous déclencherons une deuxième méthode qui permettra de créer la table en base de données. Tapez la ligne de commande suivante, puis nommez votre entity Country :
 
@@ -47,7 +49,7 @@ php bin/console make:entity
 
 Aidez-vous de la documentation Symfony pour créer cette table, il vous suffit de répondre aux questions dans la console. Lisez bien les remarques dans la console elle-même lors de la création de l'entité.
 
-## Création de l'entité Beer
+### Création de l'entité Beer
 
 Tapez la même commande que précédement, créez uniquement les champs : name, description et published_at en respectant les types du diagramme UML ci-dessus. Si vous vous trompez supprimer les fichiers se trouvant dans les dossiers Entity et Repository correspondant à votre entity et recommencez.
 
@@ -68,13 +70,13 @@ Dans l'entité Beer nous allons relier Beer à Country de la manière suivante, 
 private $country;
 ```
 
-## Création de l'entité Category
+### Création de l'entité Category
 
 Créez simplement la table Category avec un name uniquement, puis indiquez à Doctrine que vous souhaitez mettre en relation Beer et Category dans une relation ManyToMany, une bière peut se trouver dans une ou plusieurs catégories et réciproquement une catégorie peut contenir plusieurs bières.
 
 *Remarques : si vous vous trompez vous pouvez modifiez l'entité en donnant le nom de l'entité à modifier.*
 
-## Migration
+### Migration
 
 Pour créer le fichier de migration tapez la ligne de commande suivante, il permet de générer un fichier PHP dans lequel toutes les commandes SQL sont écrites afin de créer effectivement les tables en base de données, bien sûr il faudra exécuter une autre commande pour passer à la création des tables en base de données :
 
@@ -88,39 +90,11 @@ Par la suite vous taperez la ligne suivante afin de créer les tables en base de
 php bin/console doctrine:migrations:migrate
 ```
 
-## Insertion de données dans la table Beer
+## 04 Exercice Insertion de données dans la table Beer & Country
 
-Nous allons maintenant créer quelques bières et les afficher en page d'accueil, nous allons pour se faire créer une méthode spécifique dans notre contrôleur BarController.
+Fixtures Doctrine, insertion de données dans les tables pour hydrater les modèles.
 
-Créez maintenant dans le contrôleur BarController la méthode suivante **createBeer**, nous l'utiliserons pour insérer des données dans la table Beer :
-
-```php
-
-/**
-     * @Route("/newbeer", name="create_beer")
-     */
-    public function createBeer(){
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $beer = new Beer();
-        $beer->setname('Super Beer');
-        $beer->setPublishedAt(new \DateTime());
-        $beer->setDescription('Ergonomic and stylish!');
-
-        // tell Doctrine you want to (eventually) save the Product (no queries yet)
-        $entityManager->persist($beer);
-
-        // actually executes the queries (i.e. the INSERT query)
-        $entityManager->flush();
-
-        return new Response('Saved new beer with id '.$beer->getId());
-    }
-
-```
-
-## Fixtures Doctrine, insertion de données dans les tables
-
-Nous allons maintenant utiliser des fixtures pour insérer des données d'exemple dans la ressource Beer en base de données, en ligne de commande tapez :
+Nous allons utiliser des fixtures pour insérer des données d'exemple dans la ressource Beer en base de données, en ligne de commande tapez :
 
 ```bash
 composer require --dev doctrine/doctrine-fixtures-bundle
@@ -137,7 +111,9 @@ Vous trouverez la documentation officiel à l'adresse suivante :
 composer require --dev fakerphp/faker
 ```
 
-Dans le fichier AppFixtures.php précisez le namespace de la dépendance Faker comme suit (autoloader), précisez également le nom des entités avec lesquelles vous souhaitez travailler :
+Vous pouvez travailler dans le fichier AppFixtures cependant la création d'une fixture spécifique par entité est plus portable, plus clair aussi ...
+
+Créez par la suite une fixture par entité.
 
 ```php
 
@@ -163,18 +139,101 @@ class AppFixtures extends Fixture
 
 ```
 
-## Exercice Faker et AppFixtures
-
 Insérez des données à l'aide de AppFixture et de Faker, puis tapez la ligne de commande suivante :
 
 ```bash
+# Création d'une fixture 
+php bin/console make:fixture BeerFixtures
+
+# Load fixture en bas de données
 php bin/console doctrine:fixtures:load
 ```
+
+Attention pour faire les fixtures dans un ordre précis vous devez implémenter une interface dans vos classes (Fixtures) :
+
+```php
+<?php
+
+namespace App\DataFixtures;
+
+use App\Entity\Beer;
+use App\Entity\Country;
+use Faker;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
+
+class BeerFixtures extends Fixture implements OrderedFixtureInterface
+{
+    public function load(ObjectManager $manager)
+    {
+    }
+    
+   public function getOrder(){ 
+    return 2; // sera faite après une autre fixture 
+   }
+}
+```
+
+Dans CountryFixture créez des pays, voir la liste ci-dessous, puis en utilisant setCountry de Beer essayez d'associer un pays à une bière :
+
+```php
+$countries = ['belgium', 'french', 'English', 'germany'];
+```
+
+- Documenation du Faker
 
 Pour plus d'information sur ces commandes reportez-vous à la documentation officiel :
 [Fixture](https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html)
 
-## Exercice Affichez les bières en page d'accueil
+## 05 Exercice Catégories Fixture
+
+1. Modifiez l'entité Category et ajoutez un champ "term", par défaut ce champ est "normal". Créez les catégories suivantes, chaque bière aura une catégorie "normal" et au moins une catégorie spéciale :
+
+```php
+// catégories normals
+$categoriesNormals = ['blonde', 'brune', 'blanche'];
+
+// catégories specials
+$categoriesSpecials = ['houblon', 'rose', 'menthe', 'grenadine', 'réglisse', 'marron', 'whisky', 'bio'] ;
+
+```
+
+Remarque, pensez à sécuriser les termes définies de vos catétogories, seuls "normal" et "special" sont permis. Dans l'entité faite la politique suivante, mettez des constantes pour définir les valeurs (normal et special) et vérifiez la valeur des termes utilisez dans la méthode setTerm comme suit :
+
+```php
+if(!in_array($term, [self::NORMAL, self::SPECIAL])){
+    // On lance une exception ce qui provoque l'arrêt des scripts 
+    throw new \InvalidArgumentException("Invalid term"); 
+}
+```
+
+Dans un Framework tel que SF vous devez lever des exceptions lorsqu'une valeur n'est pas attentue dans le script.
+
+Créez ces catégories, pensez à l'ordre dans lequel de manière générale les fixtures doivent se faire.
+
+2. Associez ces catégories aux bières déjà créés à l'aide de vos Fixtures. Mettez à jour les données.
+
+Vous allez créer maintenant dans le repository CategoryRepository une méthode **findByTerm**, elle permettra de récupérer les catégories selon leur terme propre, par exemple récupérer les catégories normales findByTerm("special")
+
+3. Ajoutez un champ price (décimal) à l'entité Beer
+
+Pour se faire il suffit de relancer la commande suivante, notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule :
+
+```bash
+
+# Ajoutez le nouveau champ ...
+php bin/console make:entity
+
+# Créez le fichier de migration en tenant compte de
+# l'état de la base de données et des entités
+php bin/console doctrine:migrations:diff
+
+```
+
+Mettez à jour les fixtures en ajoutant à l'aide de faker des prix à vos bières.
+
+## 06 Exercice affichez les bières en page d'accueil
 
 Vous allez maintenant afficher les bières en page d'accueil. Pour cela vous allez utiliser la classe Repository de l'entité Beer.
 
@@ -202,32 +261,10 @@ Affichez maintenant les bières en page d'accueil. Notez que la syntaxe dans le 
 
 ```
 
-## Exercice Ajoutez un champ price
-
-Reprenez l'entité Beer et ajouter un price à celle-ci. Pour se faire il suffit de relancer la commande suivante, notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule :
-
-```bash
-
-# Ajoutez le nouveau champ ...
-php bin/console make:entity
-
-# Créez le fichier de migration en tenant compte de
-# l'état de la base de données et des entités
-php bin/console doctrine:migrations:diff
-
-```
-
-Mettez à jour les fixtures en ajoutant à l'aide de faker des prix à vos bières.
-
 ![database schema](images/simplebar_02.png)
 
 ## Création des countries
 
-Dans AppFixtures créez des pays, voir la liste ci-dessous, puis en utilisant setCountry de Beer essayez d'associer un pays à une bière :
-
-```php
-$countries = ['belgium', 'french', 'English', 'germany'];
-```
 
 ## Routes beer
 
@@ -248,55 +285,6 @@ notez que country_beer est le nom de votre route (voir les annotations)
         {{ beer.country.name }}
     </a>
 {% endif %}
-```
-
-## Catégories
-
-Modifiez l'entité Category et ajoutez un champ "term", par défaut ce champ est "normal".
-
-Créez les catégories suivantes, chaque bière aura une catégorie "normal" et au moins une catégorie spéciale :
-
-```php
-// catégories normals
-$categoriesNormals = ['blonde', 'brune', 'blanche'];
-
-// catégories specials
-$categoriesSpecials = ['houblon', 'rose', 'menthe', 'grenadine', 'réglisse', 'marron', 'whisky', 'bio'] ;
-
-```
-
-Remarque lorsque vous allez modifier l'entité et donc par la suite la table SQL pensez à exécuter la commande suivante :
-
-```bash
-# Compare l'état de la base de données et créer le fichier de migration
-php bin/console doctrine:migration:diff
-```
-
-Vous pouvez également lancer une fixture spécifique maintenant (elles sont toutes séparées dans des fichiers)
-
-```bash
-# La fixture pour les catégories
-php bin/console doctrine:fixtures:load --group=CategoryFixtures
-```
-
-Créez ces catégories et associées ces catégories aux bières déjà créés à l'aide de votre AppFixtures. Mettez à jour les données.
-
-Vous allez créer maintenant dans le repository CategoryRepository une méthode findByTerm, elle permettra de récupérer les catégories selon leur terme propre.
-
-Affichez pour l'instant dans un dump dans le constructeur du Controller BarController pour vérifier que vous récupérez bien ces catégories.
-
-```php
-class BarController extends AbstractController
-{
-
-    public function __construct()
-    {
-        $repository = $this->getDoctrine()->getRepository(Beer::class);
-        dump($repository->findByTerm('special'));
-    }
-
-    //...
-}
 ```
 
 ## Main menu
