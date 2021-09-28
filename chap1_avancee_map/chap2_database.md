@@ -218,7 +218,7 @@ Vous allez créer maintenant dans le repository CategoryRepository une méthode 
 
 3. Ajoutez un champ price (décimal) à l'entité Beer
 
-Pour se faire il suffit de relancer la commande suivante, notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule :
+Notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule.
 
 ```bash
 
@@ -226,9 +226,11 @@ Pour se faire il suffit de relancer la commande suivante, notez que pour un déc
 php bin/console make:entity
 
 # Créez le fichier de migration en tenant compte de
-# l'état de la base de données et des entités
+# l'état de la base de données et des entités (cohérence)
 php bin/console doctrine:migrations:diff
 
+# N'oubliez pas de créer effectivement le champ price dans la table beer
+php bin/console doctrine:migrations:migrate
 ```
 
 Mettez à jour les fixtures en ajoutant à l'aide de faker des prix à vos bières.
@@ -240,16 +242,15 @@ Vous allez maintenant afficher les bières en page d'accueil. Pour cela vous all
 Dans le contrôleur BarController Symfony met à notre disposition, sous forme d'un service, Doctrine. Nous pouvons donc utiliser le repository Beer et sa méthode findAll comme suit pour récupérer l'ensemble des ressources de cette table :
 
 ```php
-
+// appeler votre service dans une méthode ne chercher pas à l'appeler dans un constructeur d'un de vos contrôleur, cela ne marche pas (raison technique un peu complexe on en reparle)
 $repository = $this->getDoctrine()->getRepository(Beer::class);
 $beers = $repository->findAll();
-
 ```
 
 Affichez maintenant les bières en page d'accueil. Notez que la syntaxe dans le template Twig pour afficher les données est différentes du PHP habituel :
 
 ```html
-
+{% if beers %}
 {% for beer in beers %}
     {{ beer.name }}
     {# attention la date est retournée dans un objet
@@ -258,8 +259,32 @@ Affichez maintenant les bières en page d'accueil. Notez que la syntaxe dans le 
      #}
     {{ beer.publishedAt | date('d/m/Y')}}
 {% endfor %}
-
+{% else %}
+{% else %}
+<p>Aucune bière</p>
+{% endif %}
 ```
+
+Respectez le wireframe suivant 
+
+```txt
+---------------------------------------
+    PLACE DU MENU
+---------------------------------------
+SIDEBAR |  title : beer        |
+        |  date create : ...   |
+        |  price : 9           |
+        |  description : ...   |
+        |  [photo beer]
+        |  country: germany
+        |  categories : ...
+        |
+---------------------------------------
+   PLACE DU FOOTER
+---------------------------------------
+```
+
+Résumé du schéma des données
 
 ![database schema](images/simplebar_02.png)
 
