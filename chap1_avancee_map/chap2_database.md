@@ -265,6 +265,20 @@ $categoriesSpecials = ['houblon', 'rose', 'menthe', 'grenadine', 'réglisse', 'm
 
 ```
 
+Remarque lorsque vous allez modifier l'entité et donc par la suite la table SQL pensez à exécuter la commande suivante :
+
+```bash
+# Compare l'état de la base de données et créer le fichier de migration
+php bin/console doctrine:migration:diff
+```
+
+Vous pouvez également lancer une fixture spécifique maintenant (elles sont toutes séparées dans des fichiers)
+
+```bash
+# La fixture pour les catégories
+php bin/console doctrine:fixtures:load --group=CategoryFixtures
+```
+
 Créez ces catégories et associées ces catégories aux bières déjà créés à l'aide de votre AppFixtures. Mettez à jour les données.
 
 Vous allez créer maintenant dans le repository CategoryRepository une méthode findByTerm, elle permettra de récupérer les catégories selon leur terme propre.
