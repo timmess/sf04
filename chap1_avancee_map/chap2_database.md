@@ -199,14 +199,15 @@ $categoriesSpecials = ['houblon', 'rose', 'menthe', 'grenadine', 'réglisse', 'm
 
 ```
 
-2. Créez ces catégories et associées ces catégories aux bières déjà créés à l'aide de votre AppFixtures. Mettez à jour les données.
+Créez ces catégories, pensez à l'ordre dans lequel de manière générale les fixtures doivent se faire.
 
-Vous allez créer maintenant dans le repository CategoryRepository une méthode findByTerm, elle permettra de récupérer les catégories selon leur terme propre.
+2. Associez ces catégories aux bières déjà créés à l'aide de vos Fixtures. Mettez à jour les données.
 
+Vous allez créer maintenant dans le repository CategoryRepository une méthode **findByTerm**, elle permettra de récupérer les catégories selon leur terme propre, par exemple récupérer les catégories normales findByTerm("special")
 
-3. Ajoutez un champ price à l'entité Beer
+3. Ajoutez un champ price (décimal) à l'entité Beer
 
-Reprenez l'entité Beer et ajouter un price à celle-ci. Pour se faire il suffit de relancer la commande suivante, notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule :
+Pour se faire il suffit de relancer la commande suivante, notez que pour un décimale vous préciserez que ce dernier est sur 5 chiffres significatifs avec 2 chiffres après la virgule :
 
 ```bash
 
